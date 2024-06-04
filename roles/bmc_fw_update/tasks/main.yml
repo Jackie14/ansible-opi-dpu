@@ -29,6 +29,15 @@
   ansible.builtin.debug:
     msg: "{{ get_bmc_facts_all_fw_versions }}"
 
+- block:
+    - name: "Check the same firmware version"
+      ansible.builtin.debug:
+        msg: "Do not update, since the updating version is the same as existing version"
+    - ansible.builtin.meta:
+        end_host
+  when:
+    - (skip_same_version | bool) and (bmc_fw_update_image_file is search(bmc_fw_update_cur_fw_version | regex_search('[0-9-.]+')))
+
 - name: Check if firmware image exists locally {{ bmc_fw_update_image_file }}
   ansible.builtin.stat:
     path: "{{ bmc_fw_update_image_file }}"
