@@ -141,7 +141,7 @@
 
 - name: Reboot BMC to apply new firmware of DPU
   ansible.builtin.include_role:
-    name: bmc_reboot
+    name: "{{ bmc_reboot }}"
   when:
     - bmc_fw_update_reboot is true
 

@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022-2024 Dell Inc, or its subsidiaries.
+
+---
+# tasks file for cec_reboot
+
+- name: Validate server authentication input provided by user
+  ansible.builtin.fail:
+    msg: "{{ cec_reboot_mandatory_msg }}"
+  when:
+    - dpu_bmc_username is not defined or dpu_bmc_password is not defined
+
+- name: Reboot CEC
+  delegate_to: "{{ bmc_reboot_delegate }}"
+  block:
+    - name: Reboot CEC
+      ansible.builtin.uri:
+        url: "https://{{ inventory_hostname }}/redfish/v1/Chassis/Bluefield_ERoT/Actions/Chassis.Reset"
+        method: POST
+        status_code: [200, 202, 400]
+        body: '{"ResetType": "GracefulRestart"}'
+        headers:
+          Content-Type: application/octet-stream
+        url_username: "{{ dpu_bmc_username }}"
+        url_password: "{{ dpu_bmc_password }}"
+        force_basic_auth: true
+        validate_certs: false
+      register: cec_reset_http_post
+
+    - name: Check CEC self-reset(reboot) not supported
+      ansible.builtin.fail:
+        msg: "CEC self-reset(reboot) is not supported in this version, please use power cycle of the whole system instead"
+      when: cec_reset_http_post.status == 400
+
+    - name: Pause for 120 seconds for CEC to Reboot
+      ansible.builtin.pause:
+        seconds: 120 
