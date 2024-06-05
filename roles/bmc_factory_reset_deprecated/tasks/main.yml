@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022-2024 Dell Inc, or its subsidiaries.
+
+---
+# tasks file for bmc_factory_reset_deprecated
+
+- name: Validate server authentication input provided by user
+  ansible.builtin.fail:
+    msg: "{{ bmc_factory_reset_mandatory_msg }}"
+  when:
+    - dpu_bmc_username is not defined or dpu_bmc_password is not defined
+
+- name: BMC factory reset
+  delegate_to: "{{ bmc_factory_reset_delegate }}"
+  block:
+    - name: BMC factory reset
+      ansible.builtin.uri:
+        url: "https://{{ inventory_hostname }}/redfish/v1/Managers/Bluefield_BMC/Actions/Manager.ResetToDefaults"
+        method: POST
+        status_code: [200, 202]
+        body: '{"ResetToDefaultsType": "ResetAll"}'
+        headers:
+          Content-Type: application/json
+        url_username: "{{ dpu_bmc_username }}"
+        url_password: "{{ dpu_bmc_password }}"
+        force_basic_auth: true
+        validate_certs: false
+      register: bmc_factory_reset_http_post

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022-2024 Dell Inc, or its subsidiaries.
+
+---
+# vars file for bmc_factory_reset_deprecated
+
+bmc_factory_reset_delegate: "{{ lookup('ansible.builtin.env', 'RUNON', default='localhost') }}"
+bmc_factory_reset_mandatory_msg: "username/password is mandatory"

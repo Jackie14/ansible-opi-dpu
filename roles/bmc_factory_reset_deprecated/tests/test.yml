@@ -1,0 +1,6 @@
+---
+- name: Reset DPU CEC
+  hosts: localhost
+  remote_user: root
+  roles:
+    - cec_reboot

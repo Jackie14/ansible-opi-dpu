@@ -5,4 +5,4 @@
   hosts: all
   gather_facts: false
   roles:
-    - bmc_factory_reset
+    - bmc_factory_reset_deprecated
