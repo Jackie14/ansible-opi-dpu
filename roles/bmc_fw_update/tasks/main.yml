@@ -137,7 +137,7 @@
     msg: "{{ bmc_fw_update_task_failure | format(update_progress.redfish_facts.update_status.status) }}"
   when:
     - bmc_fw_update_job_wait is true
-    - update_progress.redfish_facts.update_status.status != 'Completed'
+    - update_progress.redfish_facts.update_status.status != 'Completed' or update_progress.redfish_facts.update_status.handle == None
 
 - name: Reboot BMC to apply new firmware of DPU
   ansible.builtin.include_role:
